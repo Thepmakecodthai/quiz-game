@@ -24,23 +24,8 @@ export default function Home() {
   }, [])
 
   return (
-    <div style={{ padding: 20 }}>
-      <h1>Quiz Game 🎮</h1>
-
-      {questions.length === 0 && <p>Loading questions...</p>}
-
-      {questions.map((q, i) => (
-        <div key={i} style={{ marginTop: 20 }}>
-          <h3>{q.question}</h3>
-
-          <ul>
-            <li>A: {q.a}</li>
-            <li>B: {q.b}</li>
-            <li>C: {q.c}</li>
-            <li>D: {q.d}</li>
-          </ul>
-        </div>
-      ))}
-    </div>
+    <>
+    <h1>test</h1>
+    </>
   )
 }
