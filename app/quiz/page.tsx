@@ -1,18 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 type Question = {
   id: number;
   question: string;
+  image_url?: string | null;
   choice_a: string;
   choice_b: string;
   choice_c: string | null;
   choice_d: string | null;
   correct_answer: string;
 };
+
+const STORAGE_KEY = "quiz_progress_v1";
+const QUESTIONS_KEY = "quiz_questions_v1";
+const PROGRESS_KEY = "quiz_progress_v1";
 
 export default function QuizPage() {
   const router = useRouter();
@@ -22,74 +27,169 @@ export default function QuizPage() {
   const [selected, setSelected] = useState("");
   const [score, setScore] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+  const [animating, setAnimating] = useState(false);
+  const [ready, setReady] = useState(false);
+
 
   const user =
     typeof window !== "undefined"
       ? JSON.parse(sessionStorage.getItem("userData") || "{}")
       : {};
 
-  // 📦 LOAD QUESTIONS
+
+
+  const didInit = useRef(false);
+
   useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+
     const fetchQuestions = async () => {
       setLoading(true);
-      setError("");
 
-      const { data, error } = await supabase
-        .from("questions")
-        .select("*")
-        .limit(5);
+      const saved = sessionStorage.getItem(QUESTIONS_KEY);
 
-      console.log("📦 QUESTIONS DATA:", data);
-      console.log("❌ ERROR:", error);
+      // 🔥 IMPORTANT: validate saved ก่อนใช้
+      let finalQuestions: Question[] | null = null;
 
-      if (error) {
-        setError(error.message);
-        setLoading(false);
-        return;
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+
+          // กันของพัง / array ว่าง
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            console.log("🟢 LOAD FROM STORAGE");
+            finalQuestions = parsed;
+          }
+        } catch (e) {
+          console.log("❌ STORAGE CORRUPT → RESET");
+          sessionStorage.removeItem(QUESTIONS_KEY);
+        }
       }
 
-      if (!data || data.length === 0) {
-        setError("ไม่มีคำถามในฐานข้อมูล");
-        setLoading(false);
-        return;
+      // 🔥 ถ้าไม่มีของเก่า → ค่อยสุ่มใหม่
+      if (!finalQuestions) {
+        const { data } = await supabase
+          .from("questions")
+          .select("*");
+
+        const shuffled = [...(data || [])]
+          .sort(() => Math.random() - 0.5)
+          .slice(0, 5);
+
+        finalQuestions = shuffled;
+
+        sessionStorage.setItem(
+          QUESTIONS_KEY,
+          JSON.stringify(shuffled)
+        );
+
+        console.log("🟡 NEW SHUFFLE");
       }
 
-      // shuffle เอง (แทน .order("random()"))
-      const shuffled = data.sort(() => Math.random() - 0.5);
+      setQuestions(finalQuestions);
 
-      setQuestions(shuffled);
+      setIndex(0);
+      setScore(0);
+      setSelected("");
+
       setLoading(false);
     };
 
     fetchQuestions();
   }, []);
+  // 💾 save progress
+  const saveProgress = (nextIndex: number, nextScore: number) => {
+    sessionStorage.setItem(
+      PROGRESS_KEY,
+      JSON.stringify({
+        index: nextIndex,
+        score: nextScore,
+      })
+    );
+  };
 
-  // ⏳ LOADING
-  if (loading) {
+  // 🏁 FINISH QUIZ
+  const finishQuiz = async (finalScore: number) => {
+    const total = questions.length;
+    const isPass = finalScore >= total / 2;
+
+    // 🔥 STOP animation ทันที
+    setAnimating(false);
+
+    sessionStorage.removeItem(PROGRESS_KEY);
+    sessionStorage.removeItem(QUESTIONS_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
+
+    const user = JSON.parse(sessionStorage.getItem("userData") || "{}");
+    const studentId = user?.student_id;
+
+    if (!studentId) return;
+
+    await supabase.from("results").insert([
+      {
+        student_id: studentId,
+        score: finalScore,
+        total,
+        is_pass: isPass,
+      },
+    ]);
+
+    sessionStorage.setItem(
+      "quizResult",
+      JSON.stringify({ score: finalScore, total, isPass })
+    );
+
+    // ❌ ลบ delay ทิ้งเลย
+    router.push("/result");
+  };
+
+  // ➡️ NEXT
+  const handleNext = () => {
+    const current = questions[index];
+    if (!current) return;
+
+    let newScore = score;
+
+    if (selected === current.correct_answer) {
+      newScore++;
+    }
+
+    const isLast = index === questions.length - 1;
+
+    setSelected("");
+
+    // 🔥 ถ้าเป็นข้อสุดท้าย → ห้าม animation
+    if (isLast) {
+      finishQuiz(newScore);
+      return;
+    }
+
+    // 🟢 ยังไม่ใช่ข้อสุดท้าย ค่อย animation ได้
+    setAnimating(true);
+
+    setTimeout(() => {
+      const nextIndex = index + 1;
+
+      setIndex(nextIndex);
+      setScore(newScore);
+      saveProgress(nextIndex, newScore);
+
+      setAnimating(false);
+    }, 200);
+  };
+  // 🧼 LOADING
+  if (loading || questions.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50">
-        <p className="text-purple-500">กำลังโหลดคำถาม...</p>
+      <div className="flex items-center justify-center min-h-screen bg-purple-50">
+        <p className="text-purple-500">กำลังโหลดข้อสอบ...</p>
       </div>
     );
   }
 
-  // ❌ ERROR STATE
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50">
-        <div className="text-center">
-          <p className="text-red-500 font-semibold">เกิดข้อผิดพลาด</p>
-          <p className="text-sm text-purple-500 mt-2">{error}</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ❌ NO DATA
   if (!questions.length) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-purple-50">
         <p className="text-purple-500">ไม่มีคำถาม</p>
       </div>
     );
@@ -99,97 +199,76 @@ export default function QuizPage() {
 
   if (!q) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-purple-50">
+      <div className="flex items-center justify-center min-h-screen bg-purple-50">
         <p className="text-purple-500">จบแบบทดสอบแล้ว</p>
       </div>
     );
   }
 
-  // 👉 NEXT
-  const handleNext = () => {
-    const current = questions[index];
-
-    let newScore = score;
-
-    if (selected === current.correct_answer) {
-      newScore = score + 1;
-      setScore(newScore);
-    }
-
-    setSelected("");
-
-    if (index + 1 < questions.length) {
-      setIndex(index + 1);
-    } else {
-      finishQuiz(newScore);
-    }
-  };
-
-  // 👉 FINISH
-  const finishQuiz = async (finalScore: number) => {
-    const total = questions.length;
-    const isPass = finalScore >= total / 2;
-
-    await supabase.from("results").insert([
-      {
-        student_id: Number(user.studentId),
-        score: finalScore,
-        total,
-        is_pass: isPass,
-      },
-    ]);
-
-    await supabase
-      .from("players")
-      .update({ score: finalScore })
-      .eq("student_id", user.studentId);
-
-    sessionStorage.setItem(
-      "quizResult",
-      JSON.stringify({
-        score: finalScore,
-        total,
-        isPass,
-      })
-    );
-
-    router.push("/result");
-  };
-
   return (
-    <div className="min-h-screen bg-purple-50 flex items-center justify-center px-4">
-
+    <div className="flex items-center justify-center min-h-screen px-4 bg-purple-50">
       <div className="w-full max-w-md">
 
         {/* HEADER */}
-        <div className="text-center mb-6">
+        <div className="mb-4 text-center">
           <div className="text-3xl font-black text-purple-700">
             ICT Quiz
           </div>
-          <p className="text-sm text-purple-500">
-            ข้อ {index + 1} / {questions.length}
-          </p>
+
+          {user?.name && (
+            <div className="inline-block px-4 py-1 mt-2 text-sm text-purple-700 bg-purple-100 rounded-full">
+              {user.name}
+            </div>
+          )}
+        </div>
+
+        {/* PROGRESS */}
+        <div className="mb-6">
+          <div className="flex justify-between mb-2 text-xs text-purple-500">
+            <span>Progress</span>
+            <span>{index + 1} / {questions.length}</span>
+          </div>
+
+          <div className="w-full h-2 overflow-hidden bg-purple-100 rounded-full">
+            <div
+              className="h-full transition-all duration-300 bg-purple-600"
+              style={{
+                width: `${((index + 1) / questions.length) * 100}%`,
+              }}
+            />
+          </div>
         </div>
 
         {/* CARD */}
-        <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-purple-100">
+        <div
+          className={`bg-white rounded-[2rem] p-6 border border-purple-100 shadow-sm transition-all duration-300
+          ${animating ? "opacity-0 translate-x-10" : "opacity-100 translate-x-0"}`}
+        >
 
-          {/* QUESTION */}
-          <h2 className="text-purple-900 font-semibold mb-5 text-lg">
+
+          <h2 className="mb-5 text-lg font-semibold text-purple-900">
             {q.question}
           </h2>
 
-          {/* CHOICES */}
+          <div className="flex items-center justify-center w-full mb-4 overflow-hidden bg-white border border-gray-300 h-44 sm:h-40 rounded-xl">
+            <img
+              src={q.image_url}
+              alt="question"
+              className="object-contain w-full h-full"
+            />
+          </div>
+
+
           <div className="space-y-3">
             {["A", "B", "C", "D"].map((key) => {
               const text =
                 key === "A"
                   ? q.choice_a
                   : key === "B"
-                  ? q.choice_b
-                  : key === "C"
-                  ? q.choice_c
-                  : q.choice_d;
+                    ? q.choice_b
+                    : key === "C"
+                      ? q.choice_c
+                      : q.choice_d;
 
               if (!text) return null;
 
@@ -197,11 +276,10 @@ export default function QuizPage() {
                 <button
                   key={key}
                   onClick={() => setSelected(key)}
-                  className={`w-full text-left px-4 py-3 rounded-2xl border transition-all duration-200
-                    ${
-                      selected === key
-                        ? "bg-purple-600 text-white border-purple-600"
-                        : "bg-purple-50 text-purple-900 border-purple-100 hover:border-amber-300"
+                  className={`w-full text-left px-4 py-3 rounded-2xl border transition-all
+                    ${selected === key
+                      ? "bg-purple-600 text-white border-purple-600"
+                      : "bg-purple-50 text-purple-900 border-purple-100"
                     }`}
                 >
                   {text}
@@ -214,12 +292,10 @@ export default function QuizPage() {
           <button
             onClick={handleNext}
             disabled={!selected}
-            className="w-full mt-6 py-3 rounded-2xl bg-purple-600 text-white font-semibold
-                       hover:bg-amber-600 disabled:opacity-40 transition-all"
+            className="w-full py-3 mt-6 font-semibold text-white bg-purple-600 rounded-2xl disabled:opacity-40 hover:bg-purple-700"
           >
             {index + 1 === questions.length ? "ส่งคำตอบ" : "ข้อถัดไป"}
           </button>
-
         </div>
       </div>
     </div>

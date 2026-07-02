@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image"; // For using the referenced image
+import Link from "next/link";
 
 export default function Page() {
   const router = useRouter();
@@ -18,62 +19,40 @@ export default function Page() {
     e.preventDefault();
     setError("");
 
-    // 1. validate
     if (!name.trim()) return setError("กรุณากรอกชื่อ-นามสกุล");
     if (!studentId.trim()) return setError("กรุณากรอกรหัสนิสิต");
-    if (!/^\d{10}$/.test(phone)) return setError("กรุณากรอกเบอร์โทร 10 หลัก");
+    if (!/^\d{8}$/.test(studentId)) return setError("รหัสนิสิตต้องเป็น 8 หลัก");
+    if (!/^\d{10}$/.test(phone)) return setError("เบอร์โทรต้อง 10 หลัก");
 
-    try {
-      // 2. check duplicate student_id
-      const { data: existing, error: checkError } = await supabase
-        .from("players")
-        .select("id")
-        .eq("student_id", studentId)
-        .maybeSingle();
-      if (!/^\d{8}$/.test(studentId)) {
-        setError("รหัสนิสิตต้องเป็นตัวเลข 8 หลักเท่านั้น");
-        return;
-      }
-
-      if (checkError) {
-        setError("เกิดข้อผิดพลาดในการตรวจสอบข้อมูล");
-        return;
-      }
-
-      if (existing) {
-        setError("รหัสนิสิตนี้ลงทะเบียนแล้ว");
-        return;
-      }
-
-      // 3. insert data
-      const { error: insertError } = await supabase.from("players").insert([
-        {
-          name: name.trim(),
-          student_id: studentId,
-          phone: phone,
-          score: 0, // เริ่มต้นคะแนน
-        },
-      ]);
-
-      if (insertError) {
-        console.log(insertError);
-        setError("บันทึกข้อมูลไม่สำเร็จ");
-        return;
-      }
-
-      // 4. เก็บ session
-      sessionStorage.setItem(
-        "userData",
-        JSON.stringify({ name, studentId, phone })
+    const { error: upsertError } = await supabase
+      .from("players")
+      .upsert(
+        [
+          {
+            student_id: studentId,
+            name: name.trim(),
+            phone: phone,
+          },
+        ],
+        { onConflict: "student_id" }
       );
 
-      // 5. ไปหน้า quiz
-      router.push("/quiz");
-    } catch (err) {
-      setError("เกิดข้อผิดพลาดบางอย่าง");
+    if (upsertError) {
+      setError("บันทึกข้อมูลไม่สำเร็จ");
+      return;
     }
-  };
 
+    sessionStorage.setItem(
+      "userData",
+      JSON.stringify({
+        name,
+        student_id: studentId,
+        phone,
+      })
+    );
+
+    router.push("/quiz");
+  };
   // Color mappings based on Screenshot 2569-07-01 at 23.32.51.png
   // Purple from 'ICT': #4C1D95 (deep purple for text), #7C3AED (button), #F5F3FF (very light for bg)
   // Gold-Orange from 'UP': #D97706 (amber-orange for text), #FCD34D (gold-amber for highlights), #FFFBEB (very light for error bg)
@@ -124,7 +103,7 @@ export default function Page() {
             <input
               value={studentId}
               onChange={(e) => setStudentId(e.target.value.replace(/\D/g, "").slice(0, 8))}
-  maxLength={8}
+              maxLength={8}
               placeholder="รหัสนิสิต 8 หลัก"
               className="w-full px-5 py-3.5 rounded-2xl bg-purple-50 border border-purple-100
                          text-purple-900 placeholder-purple-300 text-sm
@@ -156,11 +135,16 @@ export default function Page() {
               <span>⚠️</span> {error}
             </div>
           )}
+          <div className="text-center mt-4 text-sm text-purple-600">
+            <Link href="/resume" className="hover:underline">
+              เข้าสู่ระบบ
+            </Link>
+          </div>
 
           {/* Button color changed to primary purple and hover state adjusted to primary gold-orange */}
           <button
             type="submit"
-            className="w-full mt-6 py-4 rounded-2xl bg-purple-600 text-white
+            className="w-full mt-4 py-4 rounded-2xl bg-purple-600 text-white
                        font-semibold text-sm hover:bg-amber-600 shadow-sm
                        active:scale-[0.98] transition-all duration-200"
           >
