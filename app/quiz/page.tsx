@@ -250,13 +250,15 @@ export default function QuizPage() {
             {q.question}
           </h2>
 
-          <div className="flex items-center justify-center w-full mb-4 overflow-hidden bg-white border border-gray-300 h-44 sm:h-40 rounded-xl">
-            <img
-              src={q.image_url}
-              alt="question"
-              className="object-contain w-full h-full"
-            />
-          </div>
+          {q.image_url && (
+            <div className="flex items-center justify-center w-full mb-4 overflow-hidden bg-white border border-gray-300 h-44 sm:h-40 rounded-xl">
+              <img
+                src={q.image_url}
+                alt="question"
+                className="object-contain w-full h-full"
+              />
+            </div>
+          )}
 
 
           <div className="space-y-3">

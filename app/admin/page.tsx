@@ -13,7 +13,7 @@ type ResultRow = {
     name: string;
     student_id: string;
     phone: string;
-  };
+  }[];
 };
 
 type SelectedPlayer = {
@@ -101,7 +101,9 @@ export default function AdminPage() {
     let i = 0;
 
     const interval = setInterval(() => {
-      setCurrentName(players[i % players.length].players.name);
+      setCurrentName(
+        players[i % players.length].players?.[0]?.name || ""
+      );;
       i++;
     }, 40);
 
@@ -111,13 +113,19 @@ export default function AdminPage() {
       const winnerRaw =
         players[Math.floor(Math.random() * players.length)];
 
-      setCurrentName(winnerRaw.players.name);
+      setCurrentName(
+        winnerRaw.players?.[0]?.name || ""
+      );
+
+      const player = winnerRaw.players?.[0];
+
+      if (!player) return;
 
       setSelected({
-        id: winnerRaw.players.id,
-        name: winnerRaw.players.name,
-        student_id: winnerRaw.players.student_id,
-        phone: winnerRaw.players.phone,
+        id: player.id,
+        name: player.name,
+        student_id: player.student_id,
+        phone: player.phone,
         score: winnerRaw.score,
       });
 
@@ -128,8 +136,8 @@ export default function AdminPage() {
   // LOGIN PAGE
   if (!auth) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="w-full max-w-sm bg-white rounded-xl p-6 space-y-3">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+        <div className="w-full max-w-sm p-6 space-y-3 bg-white rounded-xl">
           <input
             className="w-full p-2 bg-gray-100 rounded"
             placeholder="username"
@@ -145,7 +153,7 @@ export default function AdminPage() {
 
           <button
             onClick={login}
-            className="w-full bg-black text-white py-2 rounded"
+            className="w-full py-2 text-white bg-black rounded"
           >
             login
           </button>
@@ -155,10 +163,10 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6 md:p-10">
+    <div className="min-h-screen p-6 bg-gray-50 md:p-10">
 
       {/* HEADER */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-semibold">Admin Dashboard</h1>
           <p className="text-sm text-gray-500">Passed students system</p>
@@ -170,8 +178,8 @@ export default function AdminPage() {
       </div>
 
       {/* RANDOM */}
-      <div className="bg-white rounded-xl p-6 mb-6">
-        <div className="flex justify-between items-center mb-4">
+      <div className="p-6 mb-6 bg-white rounded-xl">
+        <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-gray-500">Random selector</p>
 
           <button
@@ -183,7 +191,7 @@ export default function AdminPage() {
           </button>
         </div>
 
-        <div className="text-center py-8">
+        <div className="py-8 text-center">
           <p className="text-3xl font-semibold">
             {currentName || "—"}
           </p>
@@ -191,64 +199,69 @@ export default function AdminPage() {
       </div>
 
       {/* LIST */}
-      <div className="bg-white rounded-xl p-4">
-        <p className="text-sm text-gray-500 mb-3">Passed students</p>
+      <div className="p-4 bg-white rounded-xl">
+        <p className="mb-3 text-sm text-gray-500">Passed students</p>
 
         {loading ? (
           <p className="text-sm text-gray-400">loading...</p>
         ) : (
           <div className="divide-y">
-            {players.map((r, i) => (
+            {players.map((r, i) => {
+              const player = r.players?.[0];
+
+              if (!player) return null;
+
+              return (
+                <button
+                  key={i}
+                  onClick={() =>
+                    setSelected({
+                      id: player.id,
+                      name: player.name,
+                      student_id: player.student_id,
+                      phone: player.phone,
+                      score: r.score,
+                    })
+                  }
+                  className="flex justify-between w-full py-3 text-left"
+                >
+                  <span>{player.name}</span>
+                  <span className="text-xs text-gray-400">{r.score}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+        {/* MODAL */}
+        {selected && (
+          <div
+            className="fixed inset-0 flex items-center justify-center p-4 bg-black/30"
+            onClick={() => setSelected(null)}
+          >
+            <div
+              className="w-full max-w-sm p-6 bg-white rounded-xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="mb-4 text-lg font-semibold">
+                {selected.name}
+              </p>
+
+              <div className="space-y-1 text-sm text-gray-600">
+                <p>ID: {selected.student_id}</p>
+                <p>Phone: {selected.phone}</p>
+                <p>Score: {selected.score}</p>
+              </div>
+
               <button
-                key={i}
-                onClick={() =>
-                  setSelected({
-                    id: r.players.id,
-                    name: r.players.name,
-                    student_id: r.players.student_id,
-                    phone: r.players.phone,
-                    score: r.score,
-                  })
-                }
-                className="w-full flex justify-between py-3 text-left"
+                onClick={() => setSelected(null)}
+                className="w-full py-2 mt-6 text-white bg-black rounded"
               >
-                <span>{r.players.name}</span>
-                <span className="text-xs text-gray-400">{r.score}</span>
+                close
               </button>
-            ))}
+            </div>
           </div>
         )}
       </div>
-
-      {/* MODAL */}
-      {selected && (
-        <div
-          className="fixed inset-0 bg-black/30 flex items-center justify-center p-4"
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="w-full max-w-sm bg-white rounded-xl p-6"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <p className="text-lg font-semibold mb-4">
-              {selected.name}
-            </p>
-
-            <div className="text-sm text-gray-600 space-y-1">
-              <p>ID: {selected.student_id}</p>
-              <p>Phone: {selected.phone}</p>
-              <p>Score: {selected.score}</p>
-            </div>
-
-            <button
-              onClick={() => setSelected(null)}
-              className="w-full mt-6 bg-black text-white py-2 rounded"
-            >
-              close
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
