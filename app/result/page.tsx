@@ -121,19 +121,21 @@ export default function ResultPage() {
 
         {/* BUTTON */}
         <div className="flex justify-center">
-          <button
-            onClick={() => {
-              sessionStorage.removeItem("quizResult");
-              sessionStorage.removeItem("quiz_questions_v1");
-              sessionStorage.removeItem("quiz_progress_v1");
-
-              router.push("/quiz");
-            }}
-            className={`mt-8 px-8 py-3 rounded-xl text-white font-medium transition
-  ${isPass ? "bg-green-600 hover:bg-green-700" : "bg-red-500 hover:bg-red-600"}`}
-          >
-            {isPass ? "กลับหน้าแรก" : "ลองอีกครั้ง"}
-          </button>
+          {isPass ? (
+            <button
+              onClick={() => router.push("/")}
+              className="px-8 py-3 mt-8 text-white bg-green-600 rounded-xl"
+            >
+              กลับหน้าแรก
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push("/quiz")}
+              className="px-8 py-3 mt-8 text-white bg-red-500 rounded-xl"
+            >
+              ลองอีกครั้ง
+            </button>
+          )}
         </div>
 
       </div>

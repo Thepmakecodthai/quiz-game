@@ -89,15 +89,28 @@ export default function QuizPage() {
 
       setQuestions(finalQuestions);
 
-      setIndex(0);
-      setScore(0);
-      setSelected("");
+      const savedProgress =
+        sessionStorage.getItem(PROGRESS_KEY);
 
+      if (savedProgress) {
+        const progress = JSON.parse(savedProgress);
+
+        console.log("🟢 RESTORE PROGRESS", progress);
+
+        setIndex(progress.index || 0);
+        setScore(progress.score || 0);
+      } else {
+        setIndex(0);
+        setScore(0);
+      }
+
+      setSelected("");
       setLoading(false);
     };
 
-    fetchQuestions();
-  }, []);
+      fetchQuestions();
+    }, []);
+
   // 💾 save progress
   const saveProgress = (nextIndex: number, nextScore: number) => {
     sessionStorage.setItem(

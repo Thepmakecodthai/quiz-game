@@ -13,7 +13,7 @@ type ResultRow = {
     name: string;
     student_id: string;
     phone: string;
-  }[];
+  };
 };
 
 type SelectedPlayer = {
@@ -72,7 +72,11 @@ export default function AdminPage() {
         console.error(error);
       }
 
-      if (data) setPlayers(data);
+      if (data) {
+        console.log(JSON.stringify(data[0], null, 2));
+        setPlayers(data);
+      }
+
       setLoading(false);
     };
 
@@ -102,8 +106,8 @@ export default function AdminPage() {
 
     const interval = setInterval(() => {
       setCurrentName(
-        players[i % players.length].players?.[0]?.name || ""
-      );;
+        players[i % players.length].players?.name || ""
+      );
       i++;
     }, 40);
 
@@ -114,10 +118,10 @@ export default function AdminPage() {
         players[Math.floor(Math.random() * players.length)];
 
       setCurrentName(
-        winnerRaw.players?.[0]?.name || ""
+        winnerRaw.players?.name || ""
       );
 
-      const player = winnerRaw.players?.[0];
+      const player = winnerRaw.players;
 
       if (!player) return;
 
@@ -207,9 +211,9 @@ export default function AdminPage() {
         ) : (
           <div className="divide-y">
             {players.map((r, i) => {
-              const player = r.players?.[0];
+              const player = r.players;
 
-              if (!player) return null;
+         
 
               return (
                 <button
