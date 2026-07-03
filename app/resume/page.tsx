@@ -80,7 +80,7 @@ export default function ResumePage() {
         })
       );
 
-      router.push("/student");
+      router.push("/winners");
       return;
     }
 
