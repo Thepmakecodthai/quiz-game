@@ -29,6 +29,38 @@ export default function QuizPage() {
   const [loading, setLoading] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [ready, setReady] = useState(false);
+  
+
+  useEffect(() => {
+    const checkPassed = async () => {
+      const userData = sessionStorage.getItem("userData");
+
+      if (!userData) {
+        router.replace("/");
+        return;
+      }
+
+      const { student_id } = JSON.parse(userData);
+
+      if (!student_id) {
+        router.replace("/");
+        return;
+      }
+
+      const { data } = await supabase
+        .from("results")
+        .select("is_pass")
+        .eq("student_id", student_id)
+        .eq("is_pass", true)
+        .maybeSingle();
+
+      if (data?.is_pass) {
+        router.replace("/result"); // หรือ /already-done
+      }
+    };
+
+    checkPassed();
+  }, []);
 
 
   const user =
@@ -108,8 +140,8 @@ export default function QuizPage() {
       setLoading(false);
     };
 
-      fetchQuestions();
-    }, []);
+    fetchQuestions();
+  }, []);
 
   // 💾 save progress
   const saveProgress = (nextIndex: number, nextScore: number) => {

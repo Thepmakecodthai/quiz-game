@@ -58,13 +58,13 @@ export default function Page() {
   // Gold-Orange from 'UP': #D97706 (amber-orange for text), #FCD34D (gold-amber for highlights), #FFFBEB (very light for error bg)
 
   return (
-    <div className="min-h-screen bg-purple-50 flex items-center justify-center px-4">
+    <div className="flex items-center justify-center min-h-screen px-4 bg-purple-50">
 
       {/* Main Card */}
       <div className="w-full max-w-sm bg-white p-8 rounded-[2rem] shadow-sm border border-purple-100">
 
         {/* Header */}
-        <div className="flex flex-col items-center text-center mb-8">
+        <div className="flex flex-col items-center mb-8 text-center">
 
 
           <Image
@@ -86,7 +86,11 @@ export default function Page() {
             </label>
             <input
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) =>
+                setPhone(
+                  e.target.value.replace(/\D/g, "").slice(0, 10)
+                )
+              }
               placeholder="เช่น สมหญิง รักเรียน"
               className="w-full px-5 py-3.5 rounded-2xl bg-purple-50 border border-purple-100
                          text-purple-900 placeholder-purple-300 text-sm
@@ -135,7 +139,7 @@ export default function Page() {
               <span>⚠️</span> {error}
             </div>
           )}
-          <div className="text-center mt-4 text-sm text-purple-600">
+          <div className="mt-4 text-sm text-center text-purple-600">
             <Link href="/resume" className="hover:underline">
               เข้าสู่ระบบ
             </Link>
