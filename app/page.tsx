@@ -24,21 +24,30 @@ export default function Page() {
     if (!/^\d{8}$/.test(studentId)) return setError("รหัสนิสิตต้องเป็น 8 หลัก");
     if (!/^\d{10}$/.test(phone)) return setError("เบอร์โทรต้อง 10 หลัก");
 
-    const { error: upsertError } = await supabase
+    const { data: existingPlayer } = await supabase
       .from("players")
-      .upsert(
-        [
-          {
-            student_id: studentId,
-            name: name.trim(),
-            phone: phone,
-          },
-        ],
-        { onConflict: "student_id" }
-      );
+      .select("id")
+      .eq("student_id", studentId)
+      .maybeSingle();
 
-    if (upsertError) {
-      setError("บันทึกข้อมูลไม่สำเร็จ");
+    if (existingPlayer) {
+      setError("รหัสนิสิตนี้ลงทะเบียนแล้ว");
+      return;
+    }
+
+    const { error: insertError } = await supabase
+      .from("players")
+      .insert([
+        {
+          student_id: studentId,
+          name: name.trim(),
+          phone,
+        },
+      ]);
+
+    if (insertError) {
+      console.error(insertError);
+      setError(insertError.message);
       return;
     }
 
@@ -72,6 +81,7 @@ export default function Page() {
             alt="logo"
             width={120}
             height={120}
+            priority
           />
           <p className="text-purple-600 text-sm mt-1.5">กรอกข้อมูลก่อนเริ่มทำแบบทดสอบ</p>
         </div>
@@ -86,16 +96,12 @@ export default function Page() {
             </label>
             <input
               value={name}
-              onChange={(e) =>
-                setPhone(
-                  e.target.value.replace(/\D/g, "").slice(0, 10)
-                )
-              }
+              onChange={(e) => setName(e.target.value)}
               placeholder="เช่น สมหญิง รักเรียน"
               className="w-full px-5 py-3.5 rounded-2xl bg-purple-50 border border-purple-100
-                         text-purple-900 placeholder-purple-300 text-sm
-                         focus:outline-none focus:bg-white focus:border-amber-400 focus:ring-4 focus:ring-amber-100
-                         transition-all duration-200"
+             text-purple-900 placeholder-purple-300 text-sm
+             focus:outline-none focus:bg-white focus:border-amber-400 focus:ring-4 focus:ring-amber-100
+             transition-all duration-200"
             />
           </div>
 

@@ -30,6 +30,7 @@ export default function QuizPage() {
   const [animating, setAnimating] = useState(false);
   const [ready, setReady] = useState(false);
   
+  
 
   useEffect(() => {
     const checkPassed = async () => {

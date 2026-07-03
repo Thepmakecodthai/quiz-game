@@ -2,20 +2,41 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-
+import Link from "next/link";
 export default function ResultPage() {
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [name, setName] = useState("");
+  const [studentId, setStudentId] = useState("");
+
 
   const [animatedScore, setAnimatedScore] = useState(0);
+  useEffect(() => {
+    const user = sessionStorage.getItem("userData");
+    const result = sessionStorage.getItem("quizResult");
+
+    if (!user || !result) {
+      router.replace("/resume");
+      return;
+    }
+
+    setData(JSON.parse(result));
+    setName(JSON.parse(user).name || "");
+  }, [router]);
+
 
   useEffect(() => {
     const result = sessionStorage.getItem("quizResult");
     const user = sessionStorage.getItem("userData");
 
     if (result) setData(JSON.parse(result));
-    if (user) setName(JSON.parse(user).name || "");
+
+    if (user) {
+      const userData = JSON.parse(user);
+
+      setName(userData.name || "");
+      setStudentId(userData.student_id || "");
+    }
   }, []);
 
   const { score = 0, total = 0, isPass } = data || {};
@@ -60,16 +81,19 @@ export default function ResultPage() {
       className={`min-h-screen flex items-center justify-center px-4
       ${isPass ? "bg-green-50" : "bg-red-50"}`}
     >
+
       <div className="w-full max-w-md text-center">
 
-        {/* NAME */}
-        <p className="mb-2 text-sm text-gray-500">
-          ผลของ
-        </p>
 
-        <h2 className="mb-6 text-lg font-semibold text-gray-800">
+
+
+        <h2 className="text-2xl font-semibold text-gray-800">
           {name || "ไม่ทราบชื่อ"}
         </h2>
+
+        <p className="mb-6 text-lg font-medium text-gray-500">
+          {studentId}
+        </p>
 
         {/* STATUS */}
         <h1
@@ -123,10 +147,10 @@ export default function ResultPage() {
         <div className="flex justify-center">
           {isPass ? (
             <button
-              onClick={() => router.push("/")}
+              onClick={() => router.push("/winners")}
               className="px-8 py-3 mt-8 text-white bg-green-600 rounded-xl"
             >
-              กลับหน้าแรก
+              ไปหน้าประกาศผล
             </button>
           ) : (
             <button
