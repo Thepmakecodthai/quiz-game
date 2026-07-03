@@ -27,13 +27,13 @@ export default function WinnersPage() {
     router.push("/resume");
   };
   useEffect(() => {
-  const user = sessionStorage.getItem("userData");
+    const user = sessionStorage.getItem("userData");
 
-  if (!user) {
-    router.replace("/resume");
-    return;
-  }
-}, [router]);
+    if (!user) {
+      router.replace("/resume");
+      return;
+    }
+  }, [router]);
   useEffect(() => {
     const fetchWinners = async () => {
       const { data, error } = await supabase
@@ -54,7 +54,15 @@ export default function WinnersPage() {
         return;
       }
 
-      setWinners(data || []);
+      const formatted: WinnerRow[] =
+        (data || []).map((item: any) => ({
+          ...item,
+          players: Array.isArray(item.players)
+            ? item.players[0]
+            : item.players,
+        }));
+
+      setWinners(formatted);
       setLoading(false);
     };
 
@@ -121,38 +129,37 @@ export default function WinnersPage() {
 
 
         <div className="space-y-2">
-  {winners.map((winner) => {
-    const isMe =
-      winner.players.student_id === myStudentId;
+          {winners.map((winner) => {
+            const isMe =
+              winner.players.student_id === myStudentId;
 
-    return (
-      <div
-        key={winner.rank}
-        className={`flex items-center justify-between px-4 py-3 rounded-xl transition
-        ${
-          isMe
-            ? "bg-yellow-100 border border-yellow-300"
-            : "bg-gray-50"
-        }`}
-      >
-        <div>
-          <p className="font-medium">
-            {isMe && ""}
-            {winner.players.name}
-          </p>
+            return (
+              <div
+                key={winner.rank}
+                className={`flex items-center justify-between px-4 py-3 rounded-xl transition
+        ${isMe
+                    ? "bg-yellow-100 border border-yellow-300"
+                    : "bg-gray-50"
+                  }`}
+              >
+                <div>
+                  <p className="font-medium">
+                    {isMe && ""}
+                    {winner.players.name}
+                  </p>
 
-          <p className="text-xs text-gray-400">
-            {winner.players.student_id}
-          </p>
+                  <p className="text-xs text-gray-400">
+                    {winner.players.student_id}
+                  </p>
+                </div>
+
+                <div className="text-sm font-semibold text-gray-500">
+                  #{winner.rank}
+                </div>
+              </div>
+            );
+          })}
         </div>
-
-        <div className="text-sm font-semibold text-gray-500">
-          #{winner.rank}
-        </div>
-      </div>
-    );
-  })}
-</div>
 
       </div>
       {showCongrats && (

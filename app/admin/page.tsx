@@ -60,7 +60,7 @@ export default function AdminPage() {
     setCheckingAuth(false);
   }, []);
 
-  
+
 
   // fetch passed users
   useEffect(() => {
@@ -87,8 +87,16 @@ export default function AdminPage() {
       }
 
       if (data) {
-        console.log(JSON.stringify(data[0], null, 2));
-        setPlayers(data);
+        const formatted = data.map((item: any) => ({
+          ...item,
+          players: Array.isArray(item.players)
+            ? item.players[0]
+            : item.players,
+        }));
+
+        console.log(JSON.stringify(formatted[0], null, 2));
+
+        setPlayers(formatted);
       }
 
       setLoading(false);
@@ -112,12 +120,12 @@ export default function AdminPage() {
   };
 
   if (checkingAuth) {
-  return (
-    <div className="flex items-center justify-center min-h-screen">
-      loading...
-    </div>
-  );
-}
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        loading...
+      </div>
+    );
+  }
 
 
 
