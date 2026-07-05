@@ -98,7 +98,7 @@ export default function ResumePage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-purple-50">
+    <div className="flex items-center justify-center px-4 min-h-dvh bg-purple-50">
       <div className="w-full max-w-sm bg-white p-8 rounded-[2rem] shadow-sm border border-purple-100">
 
         <h1 className="mb-6 text-xl font-bold text-center text-purple-700">

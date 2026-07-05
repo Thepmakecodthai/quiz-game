@@ -132,7 +132,7 @@ export default function AdminPage() {
   // LOGIN PAGE
   if (!auth) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-gray-50">
+      <div className="flex items-center justify-center min-h-dvh bg-gray-50">
         <div className="w-full max-w-sm p-6 space-y-3 bg-white rounded-xl">
           <input
             className="w-full p-2 bg-gray-100 rounded"
@@ -159,21 +159,31 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen p-6 bg-gray-50 md:p-10">
+    <div className="p-6 min-h-dvh bg-gray-50 md:p-10">
 
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-start justify-between gap-4 mb-6">
         <div>
           <h1 className="text-xl font-semibold">ICT ADMIN</h1>
           <p className="text-sm text-gray-500">Information and Communication Technology</p>
         </div>
 
-        <button onClick={logout} className="text-sm underline">
-          <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+        <button
+          onClick={logout}
+          className="flex items-center justify-center"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-6 h-6"
+            viewBox="0 0 24 24"
+            fill="none"
+          >
             <path d="M0 0h24v24H0z" fill="none" />
-            <path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z" />
+            <path
+              fill="#C70000"
+              d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z"
+            />
           </svg>
-
         </button>
       </div>
 

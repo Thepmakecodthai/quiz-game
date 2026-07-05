@@ -67,7 +67,7 @@ export default function Page() {
   // Gold-Orange from 'UP': #D97706 (amber-orange for text), #FCD34D (gold-amber for highlights), #FFFBEB (very light for error bg)
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-purple-50">
+    <div className="flex items-center justify-center px-4 min-h-dvh bg-purple-50">
 
       {/* Main Card */}
       <div className="w-full max-w-sm bg-white p-8 rounded-[2rem] shadow-sm border border-purple-100">

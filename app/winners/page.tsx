@@ -99,7 +99,7 @@ export default function WinnersPage() {
 
 
   return (
-    <div className="min-h-screen p-6 bg-purple-50">
+    <div className="p-6 min-h-dvh bg-purple-50">
       <div className="max-w-md mx-auto">
 
         <div className="flex items-center justify-between mb-6">
@@ -122,7 +122,7 @@ export default function WinnersPage() {
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
               <path d="M0 0h24v24H0z" fill="none" />
-              <path fill="currentColor" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z" />
+              <path fill="#C70000" d="M5 21q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h7v2H5v14h7v2zm11-4l-1.375-1.45l2.55-2.55H9v-2h8.175l-2.55-2.55L16 7l5 5z" />
             </svg>
           </button>
         </div>

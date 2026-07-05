@@ -29,8 +29,8 @@ export default function QuizPage() {
   const [loading, setLoading] = useState(true);
   const [animating, setAnimating] = useState(false);
   const [ready, setReady] = useState(false);
-  
-  
+
+
 
   useEffect(() => {
     const checkPassed = async () => {
@@ -227,7 +227,7 @@ export default function QuizPage() {
   // 🧼 LOADING
   if (loading || questions.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-purple-50">
+      <div className="flex items-center justify-center min-h-dvh bg-purple-50">
         <p className="text-purple-500">กำลังโหลดข้อสอบ...</p>
       </div>
     );
@@ -235,7 +235,7 @@ export default function QuizPage() {
 
   if (!questions.length) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-purple-50">
+      <div className="flex items-center justify-center min-h-dvh bg-purple-50">
         <p className="text-purple-500">ไม่มีคำถาม</p>
       </div>
     );
@@ -245,19 +245,19 @@ export default function QuizPage() {
 
   if (!q) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-purple-50">
+      <div className="flex items-center justify-center min-h-dvh bg-purple-50">
         <p className="text-purple-500">จบแบบทดสอบแล้ว</p>
       </div>
     );
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen px-4 bg-purple-50">
+    <div className="flex items-center justify-center px-4 min-h-dvh bg-purple-50">
       <div className="w-full max-w-md">
 
         {/* HEADER */}
         <div className="mb-4 text-center">
-          <div className="text-3xl font-black text-purple-700">
+          <div className="text-2xl font-black text-purple-700">
             ICT Quiz
           </div>
 
@@ -269,7 +269,7 @@ export default function QuizPage() {
         </div>
 
         {/* PROGRESS */}
-        <div className="mb-6">
+        <div className="mb-4">
           <div className="flex justify-between mb-2 text-xs text-purple-500">
             <span>Progress</span>
             <span>{index + 1} / {questions.length}</span>
@@ -287,7 +287,7 @@ export default function QuizPage() {
 
         {/* CARD */}
         <div
-          className={`bg-white rounded-[2rem] p-6 border border-purple-100 shadow-sm transition-all duration-300
+          className={`bg-white rounded-[2rem] p-5 border border-purple-100 shadow-sm transition-all duration-300
           ${animating ? "opacity-0 translate-x-10" : "opacity-100 translate-x-0"}`}
         >
 
@@ -297,7 +297,7 @@ export default function QuizPage() {
           </h2>
 
           {q.image_url && (
-            <div className="flex items-center justify-center w-full mb-4 overflow-hidden bg-white border border-gray-300 h-44 sm:h-40 rounded-xl">
+           <div className="flex items-center justify-center w-full mb-4 overflow-hidden bg-white border border-gray-300 h-36 rounded-xl">
               <img
                 src={q.image_url}
                 alt="question"

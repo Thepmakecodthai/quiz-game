@@ -61,7 +61,7 @@ export default function ResultPage() {
 
   if (!data) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-purple-50">
+      <div className="flex items-center justify-center min-h-dvh bg-purple-50">
         <p className="text-purple-500">ไม่มีข้อมูล</p>
       </div>
     );
@@ -78,7 +78,7 @@ export default function ResultPage() {
 
   return (
     <div
-      className={`min-h-screen flex items-center justify-center px-4
+      className={`min-h-dvh flex items-center justify-center px-4
       ${isPass ? "bg-green-50" : "bg-red-50"}`}
     >
 
