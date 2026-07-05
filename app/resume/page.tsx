@@ -127,18 +127,19 @@ export default function ResumePage() {
               {error}
             </div>
           )}
-          <div className="mt-4 text-sm text-center text-purple-600">
+          
+
+          <button
+            type="submit"
+            className="w-full py-3 mt-2 font-semibold text-white transition bg-purple-600 rounded-2xl hover:bg-purple-700"
+          >
+            เข้าสู่ระบบ
+          </button>
+          <div className="mt-1 text-sm text-center text-purple-600">
             <Link href="/" className="hover:underline">
               ลงทะเบียน
             </Link>
           </div>
-
-          <button
-            type="submit"
-            className="w-full py-3 font-semibold text-white transition bg-purple-600 rounded-2xl hover:bg-purple-700"
-          >
-            เข้าสู่ระบบ
-          </button>
         </form>
       </div>
     </div>

@@ -145,11 +145,7 @@ export default function Page() {
               <span>⚠️</span> {error}
             </div>
           )}
-          <div className="mt-4 text-sm text-center text-purple-600">
-            <Link href="/resume" className="hover:underline">
-              เข้าสู่ระบบ
-            </Link>
-          </div>
+          
 
           {/* Button color changed to primary purple and hover state adjusted to primary gold-orange */}
           <button
@@ -160,6 +156,11 @@ export default function Page() {
           >
             เริ่มทำแบบทดสอบ
           </button>
+          <div className="mt-4 text-xs text-center text-purple-600">
+            <Link href="/resume" className="hover:underline">
+              เข้าสู่ระบบ (สำหรับคนที่ลงทะเบียนแล้ว)
+            </Link>
+          </div>
 
         </form>
 
