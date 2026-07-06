@@ -24,8 +24,8 @@ export default function ResultPage() {
     setData(JSON.parse(result));
     setName(JSON.parse(user).name || "");
   }, [router]);
-  
-  
+
+
 
   useEffect(() => {
     const result = sessionStorage.getItem("quizResult");
@@ -64,13 +64,17 @@ export default function ResultPage() {
   useEffect(() => {
     if (!data || !isPass) return;
 
+    const shown = sessionStorage.getItem("thankyou_shown");
+
+    if (shown) return;
+
     const timer = setTimeout(() => {
       setShowThankYou(true);
+      sessionStorage.setItem("thankyou_shown", "true");
     }, 1000);
 
     return () => clearTimeout(timer);
   }, [data, isPass]);
-
 
   if (!data) {
     return (
@@ -90,7 +94,7 @@ export default function ResultPage() {
   const color = isPass ? "#22c55e" : "#ef4444";
 
 
-  
+
 
   return (
     <div

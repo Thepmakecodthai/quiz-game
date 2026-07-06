@@ -10,6 +10,9 @@ type WinnerRow = {
     name: string;
     student_id: string;
     phone: string;
+    results?: {
+      score: number;
+    }[];
   };
 };
 
