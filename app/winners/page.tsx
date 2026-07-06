@@ -99,7 +99,12 @@ export default function WinnersPage() {
 
 
   return (
-    <div className="p-6 min-h-dvh bg-purple-50">
+    <div className="relative p-6 overflow-hidden min-h-dvh bg-purple-50">
+      <img
+  src="/images/up16.png"
+  alt=""
+  className="absolute bottom-4 left-1/2 w-72 -translate-x-1/2 opacity-[0.06] pointer-events-none"
+/>
       <div className="max-w-md mx-auto">
 
         <div className="flex items-center justify-between mb-6">
