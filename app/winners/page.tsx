@@ -101,29 +101,15 @@ export default function WinnersPage() {
   return (
     <div className="relative p-6 overflow-hidden min-h-dvh bg-purple-50">
       <img
-  src="/images/up16.png"
-  alt=""
-  className="absolute bottom-4 left-1/2 w-72 -translate-x-1/2 opacity-[0.06] pointer-events-none"
-/>
+        src="/images/up16.png"
+        alt=""
+        className="absolute bottom-4 left-1/2 w-72 -translate-x-1/2 opacity-[0.06] pointer-events-none"
+      />
       <div className="max-w-md mx-auto">
 
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex gap-4 text-sm">
-            <Link
-              href="/winners"
-              className="font-semibold"
-            >
-              ประกาศผล
-            </Link>
-
-            <Link href="/result">
-              ผลการทำแบบทดสอบ
-            </Link>
-          </div>
-
+        <div className="flex justify-end mb-4">
           <button
             onClick={logout}
-            className="text-sm underline"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
               <path d="M0 0h24v24H0z" fill="none" />
@@ -133,37 +119,50 @@ export default function WinnersPage() {
         </div>
 
 
-        <div className="space-y-2">
-          {winners.map((winner) => {
-            const isMe =
-              winner.players.student_id === myStudentId;
+        <div className="p-5 bg-white border border-purple-100 shadow-[0_2px_8px_rgba(0,0,0,0.03)] rounded-3xl">
+          <h2 className="mb-5 text-lg font-semibold text-center text-gray-800">
+            ประกาศผลผู้ได้รับรางวัล
+          </h2>
 
-            return (
-              <div
-                key={winner.rank}
-                className={`flex items-center justify-between px-4 py-3 rounded-xl transition
-        ${isMe
-                    ? "bg-yellow-100 border border-yellow-300"
-                    : "bg-gray-50"
-                  }`}
-              >
-                <div>
-                  <p className="font-medium">
-                    {isMe && ""}
-                    {winner.players.name}
-                  </p>
+          <div className="space-y-2">
+            {winners.map((winner) => {
+              const isMe =
+                winner.players.student_id === myStudentId;
 
-                  <p className="text-xs text-gray-400">
-                    {winner.players.student_id}
-                  </p>
+              return (
+                <div
+                  key={winner.rank}
+                  className={`flex items-center justify-between px-4 py-3 rounded-xl border
+          ${isMe
+                      ? "bg-yellow-50 border-yellow-300"
+                      : "bg-gray-50 border-gray-200"
+                    }`}
+                >
+                  <div>
+                    <p className="font-medium">
+                      {winner.players.name}
+                    </p>
+
+                    <p className="text-xs text-gray-400">
+                      {winner.players.student_id}
+                    </p>
+                  </div>
+
+                  <div className="text-sm font-bold text-purple-600">
+                    #{winner.rank}
+                  </div>
                 </div>
-
-                <div className="text-sm font-semibold text-gray-500">
-                  #{winner.rank}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
+        </div>
+        <div className="mt-5">
+          <Link
+            href="/result"
+            className="block py-2.5 text-center text-sm font-medium text-gray-700 bg-white rounded-xl border border-gray-200"
+          >
+            ดูผลการทำแบบทดสอบ
+          </Link>
         </div>
 
       </div>
