@@ -19,15 +19,20 @@ export default function AnnouncementTab() {
 
   const fetchWinners = async () => {
     const { data, error } = await supabase
+
       .from("winners")
-      .select(`         rank,
-        players (
-          id,
-          name,
-          student_id,
-          phone
-        )
-      `)
+      .select(`
+    rank,
+    players (
+      id,
+      name,
+      student_id,
+      phone,
+      results (
+        score
+      )
+    )
+  `)
       .order("rank", { ascending: true });
 
 
@@ -111,6 +116,9 @@ export default function AnnouncementTab() {
 
               <p className="text-sm text-gray-500">
                 เบอร์โทร: {winner.players.phone}
+              </p>
+              <p className="text-sm text-gray-500">
+                คะแนน: {winner.players.results?.[0]?.score}
               </p>
             </div>
           ))}

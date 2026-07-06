@@ -9,15 +9,19 @@ import Link from "next/link";
 
 export default function Page() {
   const router = useRouter();
+  const [accepted, setAccepted] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
 
   const [name, setName] = useState("");
   const [studentId, setStudentId] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
 
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
 
     if (!name.trim()) return setError("กรุณากรอกชื่อ-นามสกุล");
     if (!studentId.trim()) return setError("กรุณากรอกรหัสนิสิต");
@@ -68,6 +72,57 @@ export default function Page() {
 
   return (
     <div className="flex items-center justify-center px-4 min-h-dvh bg-purple-50">
+      {!accepted && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60">
+          <div className="w-full max-w-md p-6 bg-white rounded-3xl">
+            <h2 className="mb-3 text-lg font-bold text-purple-700">
+              คำยินยอมและนโยบายความเป็นส่วนตัว
+            </h2>
+
+            <div className="space-y-3 text-sm text-gray-700">
+              <p>
+                คำยินยอมและนโยบายความเป็นส่วนตัว (Consent Form)
+              </p>
+
+              <p>
+                ข้าพเจ้าตกลงยินยอมให้ผู้จัดทำเกมเก็บรวบรวมและใช้ข้อมูลส่วนบุคคลของข้าพเจ้า
+                (รหัสนิสิตและเบอร์โทรศัพท์) โดยมีวัตถุประสงค์เพื่อ:
+              </p>
+
+              <ul className="ml-5 list-disc">
+                <li>ยืนยันตัวตนในการเข้าเล่นเกม</li>
+                <li>ติดต่อประกาศผลรางวัลและแจ้งข่าวสารเฉพาะกิจกรรมของเกมนี้เท่านั้น</li>
+              </ul>
+
+              <p>
+                ข้อมูลของท่านจะถูกเก็บรักษาเป็นความลับ ไม่ถูกนำไปใช้เพื่อการพาณิชย์
+                และจะถูกลบทำลายทิ้งทันทีเมื่อจบกิจกรรม
+              </p>
+
+            </div>
+
+            <label className="flex items-start gap-2 mt-4 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={consentChecked}
+                onChange={(e) => setConsentChecked(e.target.checked)}
+                className="mt-1"
+              />
+              <span>
+                ข้าพเจ้าอ่านและเข้าใจเงื่อนไข พร้อมให้ความยินยอม
+              </span>
+            </label>
+
+            <button
+              onClick={() => setAccepted(true)}
+              disabled={!consentChecked}
+              className="w-full py-3 mt-5 text-white bg-purple-600 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Accept
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main Card */}
       <div className="w-full max-w-sm bg-white p-8 rounded-[2rem] shadow-sm border border-purple-100">
@@ -145,7 +200,7 @@ export default function Page() {
               <span>⚠️</span> {error}
             </div>
           )}
-          
+
 
           {/* Button color changed to primary purple and hover state adjusted to primary gold-orange */}
           <button

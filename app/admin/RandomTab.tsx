@@ -19,8 +19,12 @@ export default function RandomTab({
     useState<any[]>([]);
 
   const startRoll = () => {
-    if (players.length < 3) {
-      alert("ผู้ผ่านไม่ถึง 3 คน");
+    const eligiblePlayers = players.filter(
+      (p) => p.score === 5
+    );
+
+    if (eligiblePlayers.length < 3) {
+      alert("ผู้ที่ได้ 5 คะแนนมีไม่ถึง 3 คน");
       return;
     }
 
@@ -30,7 +34,8 @@ export default function RandomTab({
 
     const interval = setInterval(() => {
       setCurrentName(
-        players[i % players.length].players?.name || ""
+        eligiblePlayers[i % eligiblePlayers.length]
+          .players?.name || ""
       );
       i++;
     }, 40);
@@ -38,7 +43,7 @@ export default function RandomTab({
     setTimeout(() => {
       clearInterval(interval);
 
-      const shuffled = [...players]
+      const shuffled = [...eligiblePlayers]
         .sort(() => Math.random() - 0.5)
         .slice(0, 3);
 
