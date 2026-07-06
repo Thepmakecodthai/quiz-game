@@ -1,5 +1,5 @@
 "use client";
-
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -8,6 +8,7 @@ export default function ResultPage() {
   const [data, setData] = useState<any>(null);
   const [name, setName] = useState("");
   const [studentId, setStudentId] = useState("");
+  const [showThankYou, setShowThankYou] = useState(false);
 
 
   const [animatedScore, setAnimatedScore] = useState(0);
@@ -23,7 +24,8 @@ export default function ResultPage() {
     setData(JSON.parse(result));
     setName(JSON.parse(user).name || "");
   }, [router]);
-
+  
+  
 
   useEffect(() => {
     const result = sessionStorage.getItem("quizResult");
@@ -59,6 +61,17 @@ export default function ResultPage() {
     requestAnimationFrame(animate);
   }, [data, score]);
 
+  useEffect(() => {
+    if (!data || !isPass) return;
+
+    const timer = setTimeout(() => {
+      setShowThankYou(true);
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [data, isPass]);
+
+
   if (!data) {
     return (
       <div className="flex items-center justify-center min-h-dvh bg-purple-50">
@@ -75,6 +88,9 @@ export default function ResultPage() {
   const progress = total ? (animatedScore / total) * circumference : 0;
 
   const color = isPass ? "#22c55e" : "#ef4444";
+
+
+  
 
   return (
     <div
@@ -163,6 +179,38 @@ export default function ResultPage() {
         </div>
 
       </div>
+      {showThankYou && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
+          <div className="w-full max-w-sm p-6 text-center bg-white shadow-xl rounded-3xl">
+
+            <Image
+              src="/images/up16.png"
+              alt="University of Phayao"
+              width={100}
+              height={100}
+              className="mx-auto mb-4"
+              priority
+            />
+
+            <h2 className="mb-3 text-xl font-bold text-purple-700">
+              ขอบคุณ
+            </h2>
+
+            <p className="text-gray-700">
+              ขอบคุณที่ร่วมเล่นเกมฉลองครบรอบ 16 ปีมหาวิทยาลัยพะเยา
+            </p>
+
+            <button
+              onClick={() => setShowThankYou(false)}
+              className="w-full py-3 mt-5 text-white bg-purple-600 rounded-2xl"
+            >
+              ตกลง
+            </button>
+
+          </div>
+        </div>
+      )}
     </div>
+
   );
 }
