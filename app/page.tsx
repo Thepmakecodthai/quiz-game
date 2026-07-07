@@ -140,7 +140,7 @@ export default function Page() {
                 สำหรับผู้เข้าร่วมกิจกรรม
                 <br />
                 หากทำคะแนนได้ <span className="font-bold text-green-600">3 คะแนนขึ้นไป</span>
-                จะได้รับ <span className="font-bold">ตราประทับขอคณะ</span>
+                จะได้รับ <span className="font-bold">ตราประทับของคณะ</span>
               </p>
 
               <p>
