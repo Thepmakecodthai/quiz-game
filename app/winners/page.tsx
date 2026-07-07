@@ -103,7 +103,7 @@ export default function WinnersPage() {
       <img
         src="/images/up16.png"
         alt=""
-        className="absolute bottom-4 left-1/2 w-72 -translate-x-1/2 opacity-[0.06] pointer-events-none"
+        className="absolute bottom-4 left-1/2 w-72 -translate-x-1/2 opacity-[0.1] pointer-events-none"
       />
       <div className="max-w-md mx-auto">
 

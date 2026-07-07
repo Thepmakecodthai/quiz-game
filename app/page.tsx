@@ -16,6 +16,8 @@ export default function Page() {
   const [studentId, setStudentId] = useState("");
   const [phone, setPhone] = useState("");
   const [error, setError] = useState("");
+  
+  const [showAnnouncement, setShowAnnouncement] = useState(false);
 
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -114,11 +116,51 @@ export default function Page() {
             </label>
 
             <button
-              onClick={() => setAccepted(true)}
+              onClick={() => {
+                setAccepted(true);
+                setShowAnnouncement(true);
+              }}
               disabled={!consentChecked}
               className="w-full py-3 mt-5 text-white bg-purple-600 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed"
             >
               Accept
+            </button>
+          </div>
+        </div>
+      )}
+      {showAnnouncement && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60">
+          <div className="w-full max-w-md p-6 bg-white rounded-3xl">
+            <h2 className="mb-4 text-xl font-bold text-center text-purple-700">
+              📢 ประกาศ
+            </h2>
+
+            <div className="space-y-3 text-center text-gray-700">
+              <p>
+                สำหรับผู้เข้าร่วมกิจกรรม
+                <br />
+                หากทำคะแนนได้ <span className="font-bold text-green-600">3 คะแนนขึ้นไป</span>
+                จะได้รับ <span className="font-bold">ตราประทับขอคณะ</span>
+              </p>
+
+              <p>
+                🎉 พิเศษ!
+                <br />
+                หากน้อง ๆ ทำคะแนนได้
+                <span className="font-bold text-amber-600">เต็มทุกข้อ</span>
+                จะมีสิทธิ์ลุ้นรับของรางวัลจากคณะ ICT
+              </p>
+
+              <p>
+                หากได้รับรางวัล ทางคณะจะติดต่อกลับไปนะ 🫦🤖
+              </p>
+            </div>
+
+            <button
+              onClick={() => setShowAnnouncement(false)}
+              className="w-full py-3 mt-6 text-white bg-purple-600 rounded-2xl"
+            >
+              รับทราบ
             </button>
           </div>
         </div>
