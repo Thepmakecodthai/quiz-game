@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
-
+import Image from "next/image";
 type Question = {
   id: number;
   question: string;
@@ -251,6 +251,7 @@ export default function QuizPage() {
     );
   }
 
+
   return (
     <div className="flex items-center justify-center px-4 min-h-dvh bg-purple-50">
       <div className="w-full max-w-md">
@@ -297,11 +298,13 @@ export default function QuizPage() {
           </h2>
 
           {q.image_url && (
-           <div className="flex items-center justify-center w-full mb-4 overflow-hidden bg-white border border-gray-300 h-36 rounded-xl">
-              <img
+            <div className="relative w-full mb-4 overflow-hidden bg-white border border-gray-300 h-36 rounded-xl">
+              <Image
                 src={q.image_url}
                 alt="question"
-                className="object-contain w-full h-full"
+                fill
+                sizes="(max-width: 768px) 100vw, 500px"
+                className="object-contain"
               />
             </div>
           )}
