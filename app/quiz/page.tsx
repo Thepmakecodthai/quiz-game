@@ -122,6 +122,13 @@ export default function QuizPage() {
 
       setQuestions(finalQuestions);
 
+      finalQuestions.forEach((q) => {
+        if (q.image_url) {
+          const img = new window.Image();
+          img.src = q.image_url;
+        }
+      });
+
       const savedProgress =
         sessionStorage.getItem(PROGRESS_KEY);
 
@@ -300,10 +307,11 @@ export default function QuizPage() {
           {q.image_url && (
             <div className="relative w-full mb-4 overflow-hidden bg-white border border-gray-300 h-36 rounded-xl">
               <Image
+                key={q.id}
                 src={q.image_url}
                 alt="question"
                 fill
-                sizes="(max-width: 768px) 100vw, 500px"
+                sizes="(max-width:768px) 100vw, 500px"
                 className="object-contain"
               />
             </div>
