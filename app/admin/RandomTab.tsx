@@ -19,12 +19,14 @@ export default function RandomTab({
     useState<any[]>([]);
 
   const startRoll = () => {
+
     const eligiblePlayers = players.filter(
       (p) => p.score === 5
     );
+    console.log(eligiblePlayers);
 
-    if (eligiblePlayers.length < 3) {
-      alert("ผู้ที่ได้ 5 คะแนนมีไม่ถึง 3 คน");
+    if (eligiblePlayers.length < 5) {
+      alert("ผู้ที่ได้ 5 คะแนนมีไม่ถึง 5 คน");
       return;
     }
 
@@ -45,7 +47,7 @@ export default function RandomTab({
 
       const shuffled = [...eligiblePlayers]
         .sort(() => Math.random() - 0.5)
-        .slice(0, 3);
+        .slice(0, 5);
 
       setDrawnWinners(shuffled);
 
@@ -58,7 +60,7 @@ export default function RandomTab({
   };
 
   const publishWinners = async () => {
-    if (drawnWinners.length !== 3) {
+    if (drawnWinners.length !== 5) {
       alert("กรุณาสุ่มก่อน");
       return;
     }
@@ -75,20 +77,12 @@ export default function RandomTab({
 
     const { error } = await supabase
       .from("winners")
-      .insert([
-        {
-          player_id: drawnWinners[0].players.id,
-          rank: 1,
-        },
-        {
-          player_id: drawnWinners[1].players.id,
-          rank: 2,
-        },
-        {
-          player_id: drawnWinners[2].players.id,
-          rank: 3,
-        },
-      ]);
+      .insert(
+        drawnWinners.map((winner, index) => ({
+          player_id: winner.players.id,
+          rank: index + 1,
+        }))
+      );
 
     if (error) {
       alert(error.message);
@@ -123,7 +117,7 @@ export default function RandomTab({
         </p>
       </div>
 
-      {drawnWinners.length === 3 && (
+      {drawnWinners.length > 0 && (
         <>
           <div className="bg-white rounded-xl">
             <p className="mb-3 text-sm text-gray-500">
@@ -131,26 +125,20 @@ export default function RandomTab({
             </p>
 
             <div className="divide-y">
-              <button className="flex justify-between w-full py-3 text-left">
-                <span>{drawnWinners[0].players.name}</span>
-                <span className="text-xs text-gray-400">
-                  {drawnWinners[0].players.student_id}
-                </span>
-              </button>
+              {drawnWinners.map((winner, index) => (
+                <div
+                  key={winner.players.id}
+                  className="flex justify-between py-3"
+                >
+                  <span>
+                    #{index + 1} {winner.players.name}
+                  </span>
 
-              <button className="flex justify-between w-full py-3 text-left">
-                <span>{drawnWinners[1].players.name}</span>
-                <span className="text-xs text-gray-400">
-                  {drawnWinners[1].players.student_id}
-                </span>
-              </button>
-
-              <button className="flex justify-between w-full py-3 text-left">
-                <span>{drawnWinners[2].players.name}</span>
-                <span className="text-xs text-gray-400">
-                  {drawnWinners[2].players.student_id}
-                </span>
-              </button>
+                  <span className="text-xs text-gray-400">
+                    {winner.players.student_id}
+                  </span>
+                </div>
+              ))}
             </div>
           </div>
 
