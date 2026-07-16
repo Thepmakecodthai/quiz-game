@@ -150,6 +150,14 @@ export default function QuizPage() {
 
     fetchQuestions();
   }, []);
+  useEffect(() => {
+    const nextQuestion = questions[index + 1];
+
+    if (nextQuestion?.image_url) {
+      const img = new window.Image();
+      img.src = nextQuestion.image_url;
+    }
+  }, [index, questions]);
 
   // 💾 save progress
   const saveProgress = (nextIndex: number, nextScore: number) => {
@@ -311,6 +319,7 @@ export default function QuizPage() {
                 src={q.image_url}
                 alt="question"
                 fill
+                priority={index === 0}
                 sizes="(max-width:768px) 100vw, 500px"
                 className="object-contain"
               />
